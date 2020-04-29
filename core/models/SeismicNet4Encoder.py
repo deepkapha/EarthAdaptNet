@@ -49,7 +49,7 @@ class TransposeResidualBlock(nn.Module):
 
         self.upsample = nn.ConvTranspose2d(in_channels=in_channels, out_channels=out_channels, kernel_size=1, stride=2,
                                            output_padding=1)
-        
+
         self.act = nn.PReLU()
 
     def forward(self, x, output_size):
@@ -73,15 +73,13 @@ class SeismicNet(nn.Module):
         self.encode2 = ResidualBlock(64, 128)
         self.encode3 = ResidualBlock(128, 256)
         self.encode4 = ResidualBlock(256, 512)
-        self.encode5 = ResidualBlock(512, 1024)
 
         self.middle = nn.Sequential(
-            nn.Conv2d(1024, 1024, 1),
-            nn.BatchNorm2d(1024),
+            nn.Conv2d(512, 512, 1),
+            nn.BatchNorm2d(512),
             nn.PReLU()
         )
 
-        self.dencode5 = TransposeResidualBlock(1024, 512)
         self.dencode4 = TransposeResidualBlock(512, 256)
         self.dencode3 = TransposeResidualBlock(256, 128)
         self.dencode2 = TransposeResidualBlock(128, 64)
@@ -99,13 +97,11 @@ class SeismicNet(nn.Module):
         x2 = self.encode2(x1)
         x3 = self.encode3(x2)
         x4 = self.encode4(x3)
-        x5 = self.encode5(x4)
 
-        out_middle = self.middle(x5)
+        out_middle = self.middle(x4)
 
         # Decoder
-        out5 = self.dencode5(out_middle, x4.size()) + x4
-        out4 = self.dencode4(out5, x3.size()) + x3
+        out4 = self.dencode4(out_middle, x3.size()) + x3
         out3 = self.dencode3(out4, x2.size()) + x2
         out2 = self.dencode2(out3, x1.size()) + x1
         out1 = self.dencode1(out2, x.size()) + x

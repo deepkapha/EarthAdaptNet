@@ -23,6 +23,7 @@ class ResidualBlock(nn.Module):
 
         self.downsample = nn.Sequential(
             nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=1, stride=2),
+            nn.BatchNorm2d(out_channels)
         )
         self.act = nn.PReLU()
 
@@ -49,12 +50,14 @@ class TransposeResidualBlock(nn.Module):
 
         self.upsample = nn.ConvTranspose2d(in_channels=in_channels, out_channels=out_channels, kernel_size=1, stride=2,
                                            output_padding=1)
+        self.upsample_bn = nn.BatchNorm2d(out_channels)
         
         self.act = nn.PReLU()
 
     def forward(self, x, output_size):
         residual = self.block2(self.block1(x, output_size=output_size))
         x = self.upsample(x, output_size=output_size)
+        x = self.upsample_bn(x)
 
         return self.act(x + residual)
 
