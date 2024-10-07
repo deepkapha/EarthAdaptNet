@@ -51,17 +51,6 @@ We also provide fault planes, and the raw horizons that were used to generate th
 
 The version numbers are the exact ones I've used, but newer versions should works just fine. 
 
-```
-Pillow == 5.2.0
-matplotlib == 2.0.2
-numpy == 1.15.1
-tensorboardX == 1.4 # from here: https://github.com/lanpa/tensorboardX
-torch == 0.4.1
-torchvision == 0.2.1
-tqdm == 4.14.0
-scikit-learn == 0.18.1
-```
-
 ### Training: 
 
 To train the patch-based model with a different batch size and with augmentation,  you can run:
